@@ -1,0 +1,39 @@
+{
+	"app_hash": "",
+	"chain_id": "chain-kABhPZ",
+	"genesis_time": "2016-04-14T15:42:42.829Z",
+	"validators": [
+		{
+			"amount": 1,
+			"name": "mach1",
+			"pub_key": [
+				1,
+				"9064C006CA47B2EFF20BACAE46D19473E46A7BA84A9E17FCE440FFA779F9CAA3"
+			]
+		},
+		{
+			"amount": 1,
+			"name": "mach2",
+			"pub_key": [
+				1,
+				"DC184DC22272BF4934F89B75FA978A9C5BDFB87345201BFFAB5002C7806B9E2A"
+			]
+		},
+		{
+			"amount": 1,
+			"name": "mach3",
+			"pub_key": [
+				1,
+				"C318F11760589D6E1BD781115142D5F7432B720E0FCB13B25DE2D300FCA164AB"
+			]
+		},
+		{
+			"amount": 1,
+			"name": "mach4",
+			"pub_key": [
+				1,
+				"002879FC6DC50A8A47F692A48D6DA69ACFCED63CDCAF58DC4B18A8A3DD28D900"
+			]
+		}
+	]
+}
