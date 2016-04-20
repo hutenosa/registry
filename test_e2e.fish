@@ -25,7 +25,8 @@ function sendTx
     end
 
     set data (hexencode '{"Nonce": "'(gdate +%s)'","Action":"'$action'","Args":'$args'}')
-    set params (hexencode '{"Owner": "'$pubKey'", "Signature": "'(go run sign/main.go $privKey $data)'", "Data": "'$data'"}')
+    set signature (go run sign/main.go $privKey $data)
+    set params (hexencode '{"Owner": "'$pubKey'", "Signature": "'$signature'", "Data": "'$data'"}')
     set res (http -j POST 127.0.0.1:46657 method=broadcast_tx_sync params:='["'$params'"]' | jq -r '.result[1].log')
 
     if test "$res" = "$expected"

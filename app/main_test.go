@@ -18,6 +18,8 @@ const (
 	privBrat = "014BF5122F344554C53BDE2EBB8CD2B7E3D1600AD631C385A5D7CCE23C7785459A4EEAAADF130120EDE39396A95A48A46377E1A81503B1161A777116E56C9C8174"
 )
 
+var masters = []string{pubAlex}
+
 type MessagePak struct {
 	PublicKey  string
 	PrivateKey string
@@ -181,7 +183,7 @@ var tests = []struct {
 func TestFunc(t *testing.T) {
 
 	for _, test := range tests {
-		app := *NewInMemoryApp()
+		app := *NewInMemoryApp(masters)
 		var res types.Result
 		for _, pak := range test.paks {
 			res = testMessagePak(pak, &app, t)
@@ -195,7 +197,7 @@ func TestFunc(t *testing.T) {
 // ==========================
 
 func TestMissingMessage(t *testing.T) {
-	app := *NewInMemoryApp()
+	app := *NewInMemoryApp(masters)
 	signedMessage := SignedMessage{Data: "", Owner: "FEED", Signature: "AAEE"}
 	txdata, _ := json.Marshal(signedMessage)
 	res := app.CheckTx(txdata)
@@ -203,7 +205,7 @@ func TestMissingMessage(t *testing.T) {
 }
 
 func TestMissingOwner(t *testing.T) {
-	app := *NewInMemoryApp()
+	app := *NewInMemoryApp(masters)
 	signedMessage := SignedMessage{Data: "DEADBEEF", Owner: "", Signature: "AAEE"}
 	txdata, _ := json.Marshal(signedMessage)
 	res := app.CheckTx(txdata)
@@ -211,7 +213,7 @@ func TestMissingOwner(t *testing.T) {
 }
 
 func TestMissingSignature(t *testing.T) {
-	app := *NewInMemoryApp()
+	app := *NewInMemoryApp(masters)
 	signedMessage := SignedMessage{Data: "DEADBEEF", Owner: "FEED", Signature: ""}
 	txdata, _ := json.Marshal(signedMessage)
 	res := app.CheckTx(txdata)
@@ -223,7 +225,7 @@ func TestMissingSignature(t *testing.T) {
 // ==========================
 
 func TestTxJsonDecoding(t *testing.T) {
-	app := *NewInMemoryApp()
+	app := *NewInMemoryApp(masters)
 	txdata := []byte("not-a-valid-json-string")
 	res := app.CheckTx(txdata)
 	want := "error: decoding tx JSON"
@@ -233,7 +235,7 @@ func TestTxJsonDecoding(t *testing.T) {
 }
 
 func TestMessageJsonDecoding(t *testing.T) {
-	app := *NewInMemoryApp()
+	app := *NewInMemoryApp(masters)
 	messageDataHex := "DEADBEEF"
 	messageData, _ := hex.DecodeString(messageDataHex)
 	privKeyBytes, _ := hex.DecodeString(privAlex)
@@ -250,7 +252,7 @@ func TestMessageJsonDecoding(t *testing.T) {
 // ==========================
 
 func TestHexDecodingMessage(t *testing.T) {
-	app := *NewInMemoryApp()
+	app := *NewInMemoryApp(masters)
 	signedMessage := SignedMessage{Data: "not-hex-encoded-string", Owner: "FEED", Signature: "AAEE"}
 	txdata, _ := json.Marshal(signedMessage)
 	res := app.CheckTx(txdata)
@@ -258,7 +260,7 @@ func TestHexDecodingMessage(t *testing.T) {
 }
 
 func TestHexDecodingOwner(t *testing.T) {
-	app := *NewInMemoryApp()
+	app := *NewInMemoryApp(masters)
 	signedMessage := SignedMessage{Data: "DEADBEEF", Owner: "not-hex-encoded-string", Signature: "AAEE"}
 	txdata, _ := json.Marshal(signedMessage)
 	res := app.CheckTx(txdata)
@@ -266,7 +268,7 @@ func TestHexDecodingOwner(t *testing.T) {
 }
 
 func TestHexDecodingSignature(t *testing.T) {
-	app := *NewInMemoryApp()
+	app := *NewInMemoryApp(masters)
 	signedMessage := SignedMessage{Data: "DEADBEEF", Owner: "FEED", Signature: "not-hex-encoded-string"}
 	txdata, _ := json.Marshal(signedMessage)
 	res := app.CheckTx(txdata)
@@ -274,18 +276,45 @@ func TestHexDecodingSignature(t *testing.T) {
 }
 
 func TestUnmarshalPubKey(t *testing.T) {
-	app := *NewInMemoryApp()
+	app := *NewInMemoryApp(masters)
 	signedMessage := SignedMessage{Data: "DEADBEEF", Owner: "FEED", Signature: "AAEE"}
 	txdata, _ := json.Marshal(signedMessage)
 	res := app.CheckTx(txdata)
 	compareResult(res, "", "error: cannot read pubkey", t)
 }
 
+func TestPersistency(t *testing.T) {
+	dir, err := ioutil.TempDir("", "testPersistency")
+	if err != nil {
+		t.Errorf("cannot create temp directory")
+	}
+
+	defer os.RemoveAll(dir) // clean up
+
+	var pak MessagePak
+	var app Application
+	var res types.Result
+
+	app = *NewPersistentApp(dir+"/database.db", masters)
+
+	pak = MessagePak{pubAlex, privAlex, "Reg", []string{"alex.com", "Alex"}}
+	res = testMessagePak(pak, &app, t)
+	compareResult(res, "", "ok, can reg", t)
+
+	app.Close()
+
+	app = *NewPersistentApp(dir+"/database.db", masters)
+	pak = MessagePak{pubAlex, privAlex, "Ask", []string{"alex.com"}}
+	res = testMessagePak(pak, &app, t)
+	compareResult(res, "Alex", "ok, data found", t)
+
+}
+
 // ==========================
 // helpers ------------------
 // ==========================
 
-func testMessagePak(pak MessagePak, app *DummyApplication, t *testing.T) types.Result {
+func testMessagePak(pak MessagePak, app *Application, t *testing.T) types.Result {
 
 	message := Message{Nonce: "1", Action: pak.Action, Args: pak.Args}
 	messageData, _ := json.Marshal(message)
@@ -299,33 +328,6 @@ func testMessagePak(pak MessagePak, app *DummyApplication, t *testing.T) types.R
 	app.AppendTx(txdata)
 
 	return res
-}
-
-func TestPersistency(t *testing.T) {
-	dir, err := ioutil.TempDir("", "testPersistency")
-	if err != nil {
-		t.Errorf("cannot create temp directory")
-	}
-
-	defer os.RemoveAll(dir) // clean up
-
-	var pak MessagePak
-	var app DummyApplication
-	var res types.Result
-
-	app = *NewPersistentApp(dir + "/database.db")
-
-	pak = MessagePak{pubAlex, privAlex, "Reg", []string{"alex.com", "Alex"}}
-	res = testMessagePak(pak, &app, t)
-	compareResult(res, "", "ok, can reg", t)
-
-	app.Close()
-
-	app = *NewPersistentApp(dir + "/database.db")
-	pak = MessagePak{pubAlex, privAlex, "Ask", []string{"alex.com"}}
-	res = testMessagePak(pak, &app, t)
-	compareResult(res, "Alex", "ok, data found", t)
-
 }
 
 func compareResult(res types.Result, data, log string, t *testing.T) {
