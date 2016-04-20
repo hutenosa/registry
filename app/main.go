@@ -12,7 +12,7 @@ import (
 	"path"
 	"strings"
 
-	. "github.com/tendermint/go-common"
+	common "github.com/tendermint/go-common"
 	"github.com/tendermint/go-crypto"
 	dbs "github.com/tendermint/go-db"
 	"github.com/tendermint/go-merkle"
@@ -38,53 +38,62 @@ type MerklePayload struct {
 	Meta  string
 }
 
-const (
-	merkleRootKey = "root"
-)
-
-func main() {
-
-	addrPtr := flag.String("addr", "tcp://0.0.0.0:46658", "Listen address")
-
-	defaultDbPath := path.Join(os.Getenv("HOME"), ".tendermint/data/registry.db")
-	dbPath := flag.String("dbpath", defaultDbPath, "Database path (empty string for inmem)")
-
-	mastersStr := flag.String("masterkeys", "", "Comma-separated list of hex-encoded masterkeys")
-	flag.Parse()
-
-	var masters []string
-	if *mastersStr != "" {
-		masters = strings.Split(*mastersStr, ",")
-		log.Printf("initialized %d master keys", len(masters))
-	} else {
-		log.Printf("anarchy mode - no master keys defined")
-	}
-
-	// Start the listener
-	var err error
-	if *dbPath != "" {
-		_, err = server.NewServer(*addrPtr, NewPersistentApp(*dbPath, masters))
-	} else {
-		_, err = server.NewServer(*addrPtr, NewInMemoryApp(masters))
-	}
-	if err != nil {
-		Exit(err.Error())
-	}
-
-	// Wait forever
-	TrapSignal(func() {
-		// Cleanup
-	})
-
-}
-
 type Application struct {
 	state   merkle.Tree
 	db      dbs.DB
 	masters []string
 }
 
+const (
+	merkleRootKey = "root"
+)
+
+func main() {
+
+	defaultDbPath := path.Join(
+		os.Getenv("HOME"), ".tendermint/data/registry.db")
+
+	addrPtr := flag.String("addr", "tcp://0.0.0.0:46658", "Listen address")
+
+	dbPathPtr := flag.String("dbpath", defaultDbPath,
+		"Database path (empty string for in-memory database)")
+
+	mastersPtr := flag.String("masterkeys", "",
+		"Comma-separated list of hex-encoded public masterkeys")
+
+	flag.Parse()
+
+	var masters []string
+	if *mastersPtr != "" {
+		masters = strings.Split(*mastersPtr, ",")
+		log.Printf("initialized %d master keys", len(masters))
+	} else {
+		log.Printf("anarchy mode - no master keys defined")
+	}
+
+	var app *Application
+
+	if *dbPathPtr != "" {
+		app = NewPersistentApp(*dbPathPtr, masters)
+	} else {
+		app = NewInMemoryApp(masters)
+	}
+
+	log.Print("start server at ", *addrPtr)
+	_, err := server.NewServer(*addrPtr, app)
+
+	if err != nil {
+		log.Fatal("cannot start server: ", err)
+	}
+
+	common.TrapSignal(func() {
+		app.Close()
+	})
+
+}
+
 func NewInMemoryApp(masters []string) *Application {
+	log.Print("use non-persistent in-memory database")
 	state := merkle.NewIAVLTree(0, nil)
 	return &Application{state: state, masters: masters}
 }
@@ -98,23 +107,10 @@ func NewPersistentApp(databaseFileName string, masters []string) *Application {
 	state := merkle.NewIAVLTree(0, db)
 	merkleRoot := db.Get([]byte(merkleRootKey))
 	if merkleRoot != nil {
-		log.Printf("load merkle root '%X'\n", merkleRoot)
+		log.Printf("load merkle root '%X'", merkleRoot)
 		state.Load(merkleRoot)
 	}
 	return &Application{state: state, db: db, masters: masters}
-}
-
-func (app *Application) Info() string {
-	return Fmt("Merkle tree size: %v", app.state.Size())
-}
-
-func (app *Application) Close() {
-	app.db.Set([]byte(merkleRootKey), app.state.Save())
-	app.db.Close()
-}
-
-func (app *Application) SetOption(key string, value string) (log string) {
-	return ""
 }
 
 func (app *Application) AppendTx(tx []byte) types.Result {
@@ -130,6 +126,8 @@ func (app *Application) AppendTx(tx []byte) types.Result {
 	json.Unmarshal(messageData, &message)
 
 	switch message.Action {
+	case "Ask", "Own":
+		return types.OK
 	case "Reg":
 		data := message.Args[0]
 		meta := message.Args[1]
@@ -153,7 +151,7 @@ func (app *Application) AppendTx(tx []byte) types.Result {
 
 	if app.db != nil {
 		rootHash := app.state.Save()
-		log.Printf("save merkle root '%X'\n", rootHash)
+		log.Printf("save merkle root '%X'", rootHash)
 		app.db.Set([]byte(merkleRootKey), rootHash)
 	}
 
@@ -331,6 +329,22 @@ func (app *Application) Commit() types.Result {
 
 func (app *Application) Query(query []byte) types.Result {
 	return types.OK
+}
+
+func (app *Application) Info() string {
+	return "registry v0.0.0"
+}
+
+func (app *Application) Close() {
+	if app.db != nil {
+		log.Print("save state & close db descriptor")
+		app.db.Set([]byte(merkleRootKey), app.state.Save())
+		app.db.Close()
+	}
+}
+
+func (app *Application) SetOption(key string, value string) (log string) {
+	return ""
 }
 
 func (app *Application) isMaster(key string) bool {

@@ -40,7 +40,7 @@ function sendTx
 
 end
 
-go install github.com/hutenosa/loveme/app; and app >/dev/null &
+go install github.com/hutenosa/registry/app; and app >/dev/null &
 go install github.com/tendermint/tendermint/cmd/tendermint; and tendermint node >/dev/null &
 
 sleep 5
