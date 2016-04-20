@@ -130,13 +130,19 @@ func (app *Application) AppendTx(tx []byte) types.Result {
 	json.Unmarshal(messageData, &message)
 
 	switch message.Action {
-	case "Reg", "Mod":
+	case "Reg":
 		data := message.Args[0]
 		meta := message.Args[1]
 		app.setMerklePayload(data, MerklePayload{signedMessage.Owner, meta})
 	case "Free":
 		data := message.Args[0]
 		app.state.Remove([]byte(data))
+	case "Mod":
+		data := message.Args[0]
+		meta := message.Args[1]
+		merklePayload, _ := app.getMerklePayload(data)
+		merklePayload.Meta = meta
+		app.setMerklePayload(data, merklePayload)
 	case "Pass":
 		data := message.Args[0]
 		owner := message.Args[1]
