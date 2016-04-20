@@ -283,10 +283,10 @@ func (app *Application) CheckTx(tx []byte) types.Result {
 			return types.NewError(1, "error: meta cannot be null")
 		}
 		if merklePayload, err := app.getMerklePayload(data); err == nil {
-			if sm.Owner != merklePayload.Owner {
-				return types.NewError(1, "error: not authorized")
-			} else {
+			if app.isMaster(sm.Owner) || sm.Owner == merklePayload.Owner {
 				return types.NewResultOK([]byte{}, "ok, can mod")
+			} else {
+				return types.NewError(1, "error: not authorized")
 			}
 		} else {
 			return types.NewResultOK([]byte{}, "error: data not found")
@@ -304,10 +304,10 @@ func (app *Application) CheckTx(tx []byte) types.Result {
 			return types.NewError(1, "error: owner cannot be null")
 		}
 		if merklePayload, err := app.getMerklePayload(data); err == nil {
-			if sm.Owner != merklePayload.Owner {
-				return types.NewError(1, "error: not authorized")
-			} else {
+			if app.isMaster(sm.Owner) || sm.Owner == merklePayload.Owner {
 				return types.NewResultOK([]byte{}, "ok, can pass")
+			} else {
+				return types.NewError(1, "error: not authorized")
 			}
 		} else {
 			return types.NewResultOK([]byte{}, "error: data not found")

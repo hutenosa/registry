@@ -1,9 +1,6 @@
 #! /bin/bash
-# This is a sample bash script for a TMSP application
 
-cd app/
-git clone https://github.com/tendermint/nomnomcoin.git
-cd nomnomcoin
-npm install .
+go get github.com/hutenosa/registry/app
+go install github.com/hutenosa/registry/app
 
-node app.js --addr="unix:///data/tendermint/app/app.sock" --eyes="unix:///data/tendermint/data/data.sock"
+$GOPATH/bin/app -addr="unix:///data/tendermint/app/app.sock" -dbpath="/data/tendermint/" -masterkeys="0104D3BE256C58CAA83F87008D3537FE3928B814F2EF6FE09D0A00CD090A74CFA1"

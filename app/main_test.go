@@ -28,6 +28,7 @@ type MessagePak struct {
 }
 
 var tests = []struct {
+	name string
 	paks []MessagePak
 	log  string
 	data []byte
@@ -35,148 +36,214 @@ var tests = []struct {
 	// ==========================
 	// sanity checks ------------
 	// ==========================
-	{[]MessagePak{
+	{"sanity ask arg less", []MessagePak{
 		{pubAlex, privAlex, "Ask", []string{}},
 	}, "error: ask should have 1 argument", []byte{}},
-	{[]MessagePak{
+
+	{"sanity ask arg more", []MessagePak{
 		{pubAlex, privAlex, "Ask", []string{"a", "b"}},
 	}, "error: ask should have 1 argument", []byte{}},
-	{[]MessagePak{
+
+	{"sanity ask data", []MessagePak{
 		{pubAlex, privAlex, "Ask", []string{""}},
 	}, "error: data cannot be null", []byte{}},
-	{[]MessagePak{
+
+	{"sanity reg arg less 1", []MessagePak{
 		{pubAlex, privAlex, "Reg", []string{}},
 	}, "error: reg should have 2 arguments", []byte{}},
-	{[]MessagePak{
+
+	{"sanity reg arg less 2", []MessagePak{
 		{pubAlex, privAlex, "Reg", []string{"a"}},
 	}, "error: reg should have 2 arguments", []byte{}},
-	{[]MessagePak{
+
+	{"sanity reg arg more", []MessagePak{
 		{pubAlex, privAlex, "Reg", []string{"a", "b", "c"}},
 	}, "error: reg should have 2 arguments", []byte{}},
-	{[]MessagePak{
+
+	{"sanity reg data", []MessagePak{
 		{pubAlex, privAlex, "Reg", []string{"", ""}},
 	}, "error: data cannot be null", []byte{}},
-	{[]MessagePak{
+
+	{"sanity reg meta", []MessagePak{
 		{pubAlex, privAlex, "Reg", []string{"alex.com", ""}},
 	}, "error: meta cannot be null", []byte{}},
-	{[]MessagePak{
+
+	{"sanity free arg less", []MessagePak{
 		{pubAlex, privAlex, "Free", []string{}},
 	}, "error: free should have 1 argument", []byte{}},
-	{[]MessagePak{
+
+	{"sanity free arg more", []MessagePak{
 		{pubAlex, privAlex, "Free", []string{"a", "b"}},
 	}, "error: free should have 1 argument", []byte{}},
-	{[]MessagePak{
+
+	{"sanity free data", []MessagePak{
 		{pubAlex, privAlex, "Free", []string{""}},
 	}, "error: data cannot be null", []byte{}},
-	{[]MessagePak{
+
+	{"sanity own arg less", []MessagePak{
 		{pubAlex, privAlex, "Own", []string{}},
 	}, "error: own should have 1 argument", []byte{}},
-	{[]MessagePak{
+
+	{"sanity own arg more", []MessagePak{
 		{pubAlex, privAlex, "Own", []string{"a", "b"}},
 	}, "error: own should have 1 argument", []byte{}},
-	{[]MessagePak{
+
+	{"sanity own data", []MessagePak{
 		{pubAlex, privAlex, "Own", []string{""}},
 	}, "error: data cannot be null", []byte{}},
-	{[]MessagePak{
+
+	{"sanity pass arg less 1", []MessagePak{
 		{pubAlex, privAlex, "Pass", []string{}},
 	}, "error: pass should have 2 arguments", []byte{}},
-	{[]MessagePak{
+
+	{"sanity pass arg less 2", []MessagePak{
 		{pubAlex, privAlex, "Pass", []string{"a"}},
 	}, "error: pass should have 2 arguments", []byte{}},
-	{[]MessagePak{
+
+	{"sanity pass arg more", []MessagePak{
 		{pubAlex, privAlex, "Pass", []string{"a", "b", "c"}},
 	}, "error: pass should have 2 arguments", []byte{}},
-	{[]MessagePak{
+
+	{"sanity pass data", []MessagePak{
 		{pubAlex, privAlex, "Pass", []string{"", ""}},
 	}, "error: data cannot be null", []byte{}},
-	{[]MessagePak{
+
+	{"sanity pass owner", []MessagePak{
 		{pubAlex, privAlex, "Pass", []string{"alex.com", ""}},
 	}, "error: owner cannot be null", []byte{}},
-	{[]MessagePak{
+
+	{"sanity mod arg less 1", []MessagePak{
 		{pubAlex, privAlex, "Mod", []string{}},
 	}, "error: mod should have 2 arguments", []byte{}},
-	{[]MessagePak{
+
+	{"sanity mod arg less 2", []MessagePak{
 		{pubAlex, privAlex, "Mod", []string{"a"}},
 	}, "error: mod should have 2 arguments", []byte{}},
-	{[]MessagePak{
+
+	{"sanity mod arg more", []MessagePak{
 		{pubAlex, privAlex, "Mod", []string{"a", "b", "c"}},
 	}, "error: mod should have 2 arguments", []byte{}},
-	{[]MessagePak{
+
+	{"sanity mod data", []MessagePak{
 		{pubAlex, privAlex, "Mod", []string{"", ""}},
 	}, "error: data cannot be null", []byte{}},
-	{[]MessagePak{
+
+	{"sanity mod meta", []MessagePak{
 		{pubAlex, privAlex, "Mod", []string{"alex.com", ""}},
 	}, "error: meta cannot be null", []byte{}},
-	{[]MessagePak{
+
+	{"sanity unknown action", []MessagePak{
 		{pubAlex, privAlex, "Revolve", []string{}},
 	}, "error: unknown action", []byte{}},
 
 	// ==========================
 	// func checks --------------
 	// ==========================
-	{[]MessagePak{
+	{"simple ask", []MessagePak{
 		{pubAlex, privAlex, "Ask", []string{"alex.com"}},
 	}, "error: data not found", []byte{}},
-	{[]MessagePak{
+
+	{"simple free", []MessagePak{
 		{pubAlex, privAlex, "Free", []string{"alex.com"}},
 	}, "error: data not found", []byte{}},
-	{[]MessagePak{
+
+	{"simple reg", []MessagePak{
 		{pubAlex, privAlex, "Reg", []string{"alex.com", "Alex"}},
 	}, "ok, can reg", []byte{}},
-	{[]MessagePak{
+
+	{"reg ask", []MessagePak{
 		{pubAlex, privAlex, "Reg", []string{"alex.com", "Alex"}},
 		{pubAlex, privAlex, "Ask", []string{"alex.com"}},
 	}, "ok, data found", []byte("Alex")},
-	{[]MessagePak{
+
+	{"reg own", []MessagePak{
 		{pubAlex, privAlex, "Reg", []string{"alex.com", "Alex"}},
 		{pubAlex, privAlex, "Own", []string{"alex.com"}},
 	}, "ok, data found", []byte(pubAlex)},
-	{[]MessagePak{
+
+	{"double reg", []MessagePak{
 		{pubAlex, privAlex, "Reg", []string{"alex.com", "Alex"}},
 		{pubAlex, privAlex, "Reg", []string{"alex.com", "Alex"}},
 	}, "error: data exists", []byte{}},
-	{[]MessagePak{
+
+	{"reg free ask", []MessagePak{
 		{pubAlex, privAlex, "Reg", []string{"alex.com", "Alex"}},
 		{pubAlex, privAlex, "Free", []string{"alex.com"}},
 		{pubAlex, privAlex, "Ask", []string{"alex.com"}},
 	}, "error: data not found", []byte{}},
-	{[]MessagePak{
+
+	{"reg mod", []MessagePak{
 		{pubAlex, privAlex, "Reg", []string{"alex.com", "Alex"}},
 		{pubAlex, privAlex, "Mod", []string{"alex.com", "Alex"}},
 	}, "ok, can mod", []byte{}},
-	{[]MessagePak{
-		{pubAlex, privAlex, "Reg", []string{"alex.com", "Alex"}},
-		{pubBrat, privBrat, "Mod", []string{"alex.com", "Alex"}},
-	}, "error: not authorized", []byte{}},
-	{[]MessagePak{
+
+	{"reg mod ask", []MessagePak{
 		{pubAlex, privAlex, "Reg", []string{"alex.com", "Alex"}},
 		{pubAlex, privAlex, "Mod", []string{"alex.com", "Mr Nobody"}},
 		{pubAlex, privAlex, "Ask", []string{"alex.com"}},
 	}, "ok, data found", []byte("Mr Nobody")},
-	{[]MessagePak{
+
+	{"mod unathorized", []MessagePak{
+		{pubAlex, privAlex, "Reg", []string{"alex.com", "Alex"}},
+		{pubBrat, privBrat, "Mod", []string{"alex.com", "Alex"}},
+	}, "error: not authorized", []byte{}},
+
+	{"reg pass", []MessagePak{
 		{pubAlex, privAlex, "Reg", []string{"alex.com", "Alex"}},
 		{pubAlex, privAlex, "Pass", []string{"alex.com", pubAlex}},
 	}, "ok, can pass", []byte{}},
-	{[]MessagePak{
-		{pubAlex, privAlex, "Reg", []string{"alex.com", "Alex"}},
-		{pubBrat, privBrat, "Pass", []string{"alex.com", pubBrat}},
-	}, "error: not authorized", []byte{}},
-	{[]MessagePak{
+
+	{"reg pass own", []MessagePak{
 		{pubAlex, privAlex, "Reg", []string{"alex.com", "Alex"}},
 		{pubAlex, privAlex, "Pass", []string{"alex.com", pubBrat}},
 		{pubAlex, privAlex, "Own", []string{"alex.com"}},
 	}, "ok, data found", []byte(pubBrat)},
-	{[]MessagePak{
+
+	{"pass unathorized", []MessagePak{
+		{pubAlex, privAlex, "Reg", []string{"alex.com", "Alex"}},
+		{pubBrat, privBrat, "Pass", []string{"alex.com", pubBrat}},
+	}, "error: not authorized", []byte{}},
+
+	{"reg unathorized", []MessagePak{
+		{pubBrat, privBrat, "Reg", []string{"brat.com", "Brat"}},
+	}, "error: not authorized", []byte{}},
+
+	{"free unathorized", []MessagePak{
+		{pubAlex, privAlex, "Reg", []string{"brat.com", "Alex"}},
+		{pubAlex, privAlex, "Pass", []string{"brat.com", pubBrat}},
+		{pubBrat, privBrat, "Free", []string{"brat.com"}},
+	}, "error: not authorized", []byte{}},
+
+	{"pass authorized user", []MessagePak{
+		{pubAlex, privAlex, "Reg", []string{"alex.com", "Alex"}},
+		{pubAlex, privAlex, "Pass", []string{"alex.com", pubBrat}},
+		{pubBrat, privBrat, "Pass", []string{"alex.com", pubAlex}},
+	}, "ok, can pass", []byte{}},
+
+	{"pass force authorized master", []MessagePak{
 		{pubAlex, privAlex, "Reg", []string{"alex.com", "Alex"}},
 		{pubAlex, privAlex, "Pass", []string{"alex.com", pubBrat}},
 		{pubAlex, privAlex, "Pass", []string{"alex.com", pubBrat}},
+	}, "ok, can pass", []byte{}},
+
+	{"mod force authorized master", []MessagePak{
+		{pubAlex, privAlex, "Reg", []string{"alex.com", "Alex"}},
+		{pubAlex, privAlex, "Pass", []string{"alex.com", pubBrat}},
+		{pubAlex, privAlex, "Mod", []string{"alex.com", "Sophie"}},
+	}, "ok, can mod", []byte{}},
+
+	{"pass unathorized user", []MessagePak{
+		{pubAlex, privAlex, "Reg", []string{"alex.com", "Alex"}},
+		{pubAlex, privAlex, "Pass", []string{"alex.com", pubBrat}},
+		{pubBrat, privBrat, "Pass", []string{"alex.com", pubAlex}},
+		{pubBrat, privBrat, "Pass", []string{"alex.com", pubAlex}},
 	}, "error: not authorized", []byte{}},
-	{[]MessagePak{
-		{pubBrat, privBrat, "Reg", []string{"brat.com", "Brat"}},
-	}, "error: not authorized", []byte{}},
-	{[]MessagePak{
-		{pubAlex, privAlex, "Reg", []string{"brat.com", "Brat"}},
-		{pubBrat, privBrat, "Free", []string{"brat.com"}},
+
+	{"mod unathorized user", []MessagePak{
+		{pubAlex, privAlex, "Reg", []string{"alex.com", "Alex"}},
+		{pubAlex, privAlex, "Pass", []string{"alex.com", pubBrat}},
+		{pubBrat, privBrat, "Pass", []string{"alex.com", pubAlex}},
+		{pubBrat, privBrat, "Mod", []string{"alex.com", "Larry"}},
 	}, "error: not authorized", []byte{}},
 }
 
@@ -188,7 +255,7 @@ func TestFunc(t *testing.T) {
 		for _, pak := range test.paks {
 			res = testMessagePak(pak, &app, t)
 		}
-		compareResult(res, string(test.data), test.log, t)
+		compareResult(test.name, res, string(test.data), test.log, t)
 	}
 }
 
@@ -201,7 +268,7 @@ func TestMissingMessage(t *testing.T) {
 	signedMessage := SignedMessage{Data: "", Owner: "FEED", Signature: "AAEE"}
 	txdata, _ := json.Marshal(signedMessage)
 	res := app.CheckTx(txdata)
-	compareResult(res, "", "error: message cannot be null", t)
+	compareResult("missing message", res, "", "error: message cannot be null", t)
 }
 
 func TestMissingOwner(t *testing.T) {
@@ -209,7 +276,7 @@ func TestMissingOwner(t *testing.T) {
 	signedMessage := SignedMessage{Data: "DEADBEEF", Owner: "", Signature: "AAEE"}
 	txdata, _ := json.Marshal(signedMessage)
 	res := app.CheckTx(txdata)
-	compareResult(res, "", "error: owner cannot be null", t)
+	compareResult("missing owner", res, "", "error: owner cannot be null", t)
 }
 
 func TestMissingSignature(t *testing.T) {
@@ -217,7 +284,7 @@ func TestMissingSignature(t *testing.T) {
 	signedMessage := SignedMessage{Data: "DEADBEEF", Owner: "FEED", Signature: ""}
 	txdata, _ := json.Marshal(signedMessage)
 	res := app.CheckTx(txdata)
-	compareResult(res, "", "error: signature cannot be null", t)
+	compareResult("missing signature", res, "", "error: signature cannot be null", t)
 }
 
 // ==========================
@@ -228,10 +295,7 @@ func TestTxJsonDecoding(t *testing.T) {
 	app := *NewInMemoryApp(masters)
 	txdata := []byte("not-a-valid-json-string")
 	res := app.CheckTx(txdata)
-	want := "error: decoding tx JSON"
-	if res.Log != want {
-		t.Errorf("Got \"%v\"; want \"%v\"", res.Log, want)
-	}
+	compareResult("tx json decoding", res, "", "error: decoding tx JSON", t)
 }
 
 func TestMessageJsonDecoding(t *testing.T) {
@@ -244,35 +308,35 @@ func TestMessageJsonDecoding(t *testing.T) {
 	signedMessage := SignedMessage{Data: messageDataHex, Owner: pubAlex, Signature: signature}
 	txdata, _ := json.Marshal(signedMessage)
 	res := app.CheckTx(txdata)
-	compareResult(res, "", "error: decoding message JSON", t)
+	compareResult("message json decoding", res, "", "error: decoding message JSON", t)
 }
 
 // ==========================
 // hex decoding -------------
 // ==========================
 
-func TestHexDecodingMessage(t *testing.T) {
+func TestMessageHexDecoding(t *testing.T) {
 	app := *NewInMemoryApp(masters)
 	signedMessage := SignedMessage{Data: "not-hex-encoded-string", Owner: "FEED", Signature: "AAEE"}
 	txdata, _ := json.Marshal(signedMessage)
 	res := app.CheckTx(txdata)
-	compareResult(res, "", "error: decoding hex data", t)
+	compareResult("message hex decoding", res, "", "error: decoding hex data", t)
 }
 
-func TestHexDecodingOwner(t *testing.T) {
+func TestOwnerHexDecoding(t *testing.T) {
 	app := *NewInMemoryApp(masters)
 	signedMessage := SignedMessage{Data: "DEADBEEF", Owner: "not-hex-encoded-string", Signature: "AAEE"}
 	txdata, _ := json.Marshal(signedMessage)
 	res := app.CheckTx(txdata)
-	compareResult(res, "", "error: cannot decode owner", t)
+	compareResult("owner hex decoding", res, "", "error: cannot decode owner", t)
 }
 
-func TestHexDecodingSignature(t *testing.T) {
+func TestSignatureHexDecoding(t *testing.T) {
 	app := *NewInMemoryApp(masters)
 	signedMessage := SignedMessage{Data: "DEADBEEF", Owner: "FEED", Signature: "not-hex-encoded-string"}
 	txdata, _ := json.Marshal(signedMessage)
 	res := app.CheckTx(txdata)
-	compareResult(res, "", "error: cannot decode signature", t)
+	compareResult("signature hex decoding", res, "", "error: cannot decode signature", t)
 }
 
 func TestUnmarshalPubKey(t *testing.T) {
@@ -280,7 +344,7 @@ func TestUnmarshalPubKey(t *testing.T) {
 	signedMessage := SignedMessage{Data: "DEADBEEF", Owner: "FEED", Signature: "AAEE"}
 	txdata, _ := json.Marshal(signedMessage)
 	res := app.CheckTx(txdata)
-	compareResult(res, "", "error: cannot read pubkey", t)
+	compareResult("unmarshal pub key", res, "", "error: cannot read pubkey", t)
 }
 
 func TestPersistency(t *testing.T) {
@@ -299,14 +363,14 @@ func TestPersistency(t *testing.T) {
 
 	pak = MessagePak{pubAlex, privAlex, "Reg", []string{"alex.com", "Alex"}}
 	res = testMessagePak(pak, &app, t)
-	compareResult(res, "", "ok, can reg", t)
+	compareResult("persistency check 1", res, "", "ok, can reg", t)
 
 	app.Close()
 
 	app = *NewPersistentApp(dir+"/database.db", masters)
 	pak = MessagePak{pubAlex, privAlex, "Ask", []string{"alex.com"}}
 	res = testMessagePak(pak, &app, t)
-	compareResult(res, "Alex", "ok, data found", t)
+	compareResult("persistency check 2", res, "Alex", "ok, data found", t)
 
 }
 
@@ -330,12 +394,12 @@ func testMessagePak(pak MessagePak, app *Application, t *testing.T) types.Result
 	return res
 }
 
-func compareResult(res types.Result, data, log string, t *testing.T) {
+func compareResult(name string, res types.Result, data, log string, t *testing.T) {
 	if res.Log != log {
-		t.Errorf("Test error, got \"%v\"; want \"%v\"", res.Log, log)
+		t.Errorf("\"%s\" failed, got \"%v\"; want \"%v\"", name, res.Log, log)
 	}
 	if !equals(res.Data, []byte(data)) {
-		t.Errorf("Test error, got \"%v\"; want \"%v\"", string(res.Data), data)
+		t.Errorf("\"%s\" failed, got \"%v\"; want \"%v\"", name, string(res.Data), data)
 	}
 }
 
