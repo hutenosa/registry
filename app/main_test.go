@@ -37,213 +37,213 @@ var tests = []struct {
 	// sanity checks ------------
 	// ==========================
 	{"sanity ask arg less", []MessagePak{
-		{pubAlex, privAlex, "Ask", []string{}},
+		{pubAlex, privAlex, "ask", []string{}},
 	}, "error: ask should have 1 argument", []byte{}},
 
 	{"sanity ask arg more", []MessagePak{
-		{pubAlex, privAlex, "Ask", []string{"a", "b"}},
+		{pubAlex, privAlex, "ask", []string{"a", "b"}},
 	}, "error: ask should have 1 argument", []byte{}},
 
 	{"sanity ask data", []MessagePak{
-		{pubAlex, privAlex, "Ask", []string{""}},
+		{pubAlex, privAlex, "ask", []string{""}},
 	}, "error: data cannot be null", []byte{}},
 
 	{"sanity reg arg less 1", []MessagePak{
-		{pubAlex, privAlex, "Reg", []string{}},
+		{pubAlex, privAlex, "reg", []string{}},
 	}, "error: reg should have 2 arguments", []byte{}},
 
 	{"sanity reg arg less 2", []MessagePak{
-		{pubAlex, privAlex, "Reg", []string{"a"}},
+		{pubAlex, privAlex, "reg", []string{"a"}},
 	}, "error: reg should have 2 arguments", []byte{}},
 
 	{"sanity reg arg more", []MessagePak{
-		{pubAlex, privAlex, "Reg", []string{"a", "b", "c"}},
+		{pubAlex, privAlex, "reg", []string{"a", "b", "c"}},
 	}, "error: reg should have 2 arguments", []byte{}},
 
 	{"sanity reg data", []MessagePak{
-		{pubAlex, privAlex, "Reg", []string{"", ""}},
+		{pubAlex, privAlex, "reg", []string{"", ""}},
 	}, "error: data cannot be null", []byte{}},
 
 	{"sanity reg meta", []MessagePak{
-		{pubAlex, privAlex, "Reg", []string{"alex.com", ""}},
+		{pubAlex, privAlex, "reg", []string{"alex.com", ""}},
 	}, "error: meta cannot be null", []byte{}},
 
 	{"sanity free arg less", []MessagePak{
-		{pubAlex, privAlex, "Free", []string{}},
+		{pubAlex, privAlex, "free", []string{}},
 	}, "error: free should have 1 argument", []byte{}},
 
 	{"sanity free arg more", []MessagePak{
-		{pubAlex, privAlex, "Free", []string{"a", "b"}},
+		{pubAlex, privAlex, "free", []string{"a", "b"}},
 	}, "error: free should have 1 argument", []byte{}},
 
 	{"sanity free data", []MessagePak{
-		{pubAlex, privAlex, "Free", []string{""}},
+		{pubAlex, privAlex, "free", []string{""}},
 	}, "error: data cannot be null", []byte{}},
 
 	{"sanity own arg less", []MessagePak{
-		{pubAlex, privAlex, "Own", []string{}},
+		{pubAlex, privAlex, "own", []string{}},
 	}, "error: own should have 1 argument", []byte{}},
 
 	{"sanity own arg more", []MessagePak{
-		{pubAlex, privAlex, "Own", []string{"a", "b"}},
+		{pubAlex, privAlex, "own", []string{"a", "b"}},
 	}, "error: own should have 1 argument", []byte{}},
 
 	{"sanity own data", []MessagePak{
-		{pubAlex, privAlex, "Own", []string{""}},
+		{pubAlex, privAlex, "own", []string{""}},
 	}, "error: data cannot be null", []byte{}},
 
 	{"sanity pass arg less 1", []MessagePak{
-		{pubAlex, privAlex, "Pass", []string{}},
+		{pubAlex, privAlex, "pass", []string{}},
 	}, "error: pass should have 2 arguments", []byte{}},
 
 	{"sanity pass arg less 2", []MessagePak{
-		{pubAlex, privAlex, "Pass", []string{"a"}},
+		{pubAlex, privAlex, "pass", []string{"a"}},
 	}, "error: pass should have 2 arguments", []byte{}},
 
 	{"sanity pass arg more", []MessagePak{
-		{pubAlex, privAlex, "Pass", []string{"a", "b", "c"}},
+		{pubAlex, privAlex, "pass", []string{"a", "b", "c"}},
 	}, "error: pass should have 2 arguments", []byte{}},
 
 	{"sanity pass data", []MessagePak{
-		{pubAlex, privAlex, "Pass", []string{"", ""}},
+		{pubAlex, privAlex, "pass", []string{"", ""}},
 	}, "error: data cannot be null", []byte{}},
 
 	{"sanity pass owner", []MessagePak{
-		{pubAlex, privAlex, "Pass", []string{"alex.com", ""}},
+		{pubAlex, privAlex, "pass", []string{"alex.com", ""}},
 	}, "error: owner cannot be null", []byte{}},
 
 	{"sanity mod arg less 1", []MessagePak{
-		{pubAlex, privAlex, "Mod", []string{}},
+		{pubAlex, privAlex, "mod", []string{}},
 	}, "error: mod should have 2 arguments", []byte{}},
 
 	{"sanity mod arg less 2", []MessagePak{
-		{pubAlex, privAlex, "Mod", []string{"a"}},
+		{pubAlex, privAlex, "mod", []string{"a"}},
 	}, "error: mod should have 2 arguments", []byte{}},
 
 	{"sanity mod arg more", []MessagePak{
-		{pubAlex, privAlex, "Mod", []string{"a", "b", "c"}},
+		{pubAlex, privAlex, "mod", []string{"a", "b", "c"}},
 	}, "error: mod should have 2 arguments", []byte{}},
 
 	{"sanity mod data", []MessagePak{
-		{pubAlex, privAlex, "Mod", []string{"", ""}},
+		{pubAlex, privAlex, "mod", []string{"", ""}},
 	}, "error: data cannot be null", []byte{}},
 
 	{"sanity mod meta", []MessagePak{
-		{pubAlex, privAlex, "Mod", []string{"alex.com", ""}},
+		{pubAlex, privAlex, "mod", []string{"alex.com", ""}},
 	}, "error: meta cannot be null", []byte{}},
 
 	{"sanity unknown action", []MessagePak{
-		{pubAlex, privAlex, "Revolve", []string{}},
+		{pubAlex, privAlex, "revolve", []string{}},
 	}, "error: unknown action", []byte{}},
 
 	// ==========================
 	// func checks --------------
 	// ==========================
 	{"simple ask", []MessagePak{
-		{pubAlex, privAlex, "Ask", []string{"alex.com"}},
+		{pubAlex, privAlex, "ask", []string{"alex.com"}},
 	}, "error: data not found", []byte{}},
 
 	{"simple free", []MessagePak{
-		{pubAlex, privAlex, "Free", []string{"alex.com"}},
+		{pubAlex, privAlex, "free", []string{"alex.com"}},
 	}, "error: data not found", []byte{}},
 
 	{"simple reg", []MessagePak{
-		{pubAlex, privAlex, "Reg", []string{"alex.com", "Alex"}},
+		{pubAlex, privAlex, "reg", []string{"alex.com", "Alex"}},
 	}, "ok, can reg", []byte{}},
 
 	{"reg ask", []MessagePak{
-		{pubAlex, privAlex, "Reg", []string{"alex.com", "Alex"}},
-		{pubAlex, privAlex, "Ask", []string{"alex.com"}},
+		{pubAlex, privAlex, "reg", []string{"alex.com", "Alex"}},
+		{pubAlex, privAlex, "ask", []string{"alex.com"}},
 	}, "ok, data found", []byte("Alex")},
 
 	{"reg own", []MessagePak{
-		{pubAlex, privAlex, "Reg", []string{"alex.com", "Alex"}},
-		{pubAlex, privAlex, "Own", []string{"alex.com"}},
+		{pubAlex, privAlex, "reg", []string{"alex.com", "Alex"}},
+		{pubAlex, privAlex, "own", []string{"alex.com"}},
 	}, "ok, data found", []byte(pubAlex)},
 
 	{"double reg", []MessagePak{
-		{pubAlex, privAlex, "Reg", []string{"alex.com", "Alex"}},
-		{pubAlex, privAlex, "Reg", []string{"alex.com", "Alex"}},
+		{pubAlex, privAlex, "reg", []string{"alex.com", "Alex"}},
+		{pubAlex, privAlex, "reg", []string{"alex.com", "Alex"}},
 	}, "error: data exists", []byte{}},
 
 	{"reg free ask", []MessagePak{
-		{pubAlex, privAlex, "Reg", []string{"alex.com", "Alex"}},
-		{pubAlex, privAlex, "Free", []string{"alex.com"}},
-		{pubAlex, privAlex, "Ask", []string{"alex.com"}},
+		{pubAlex, privAlex, "reg", []string{"alex.com", "Alex"}},
+		{pubAlex, privAlex, "free", []string{"alex.com"}},
+		{pubAlex, privAlex, "ask", []string{"alex.com"}},
 	}, "error: data not found", []byte{}},
 
 	{"reg mod", []MessagePak{
-		{pubAlex, privAlex, "Reg", []string{"alex.com", "Alex"}},
-		{pubAlex, privAlex, "Mod", []string{"alex.com", "Alex"}},
+		{pubAlex, privAlex, "reg", []string{"alex.com", "Alex"}},
+		{pubAlex, privAlex, "mod", []string{"alex.com", "Alex"}},
 	}, "ok, can mod", []byte{}},
 
 	{"reg mod ask", []MessagePak{
-		{pubAlex, privAlex, "Reg", []string{"alex.com", "Alex"}},
-		{pubAlex, privAlex, "Mod", []string{"alex.com", "Mr Nobody"}},
-		{pubAlex, privAlex, "Ask", []string{"alex.com"}},
+		{pubAlex, privAlex, "reg", []string{"alex.com", "Alex"}},
+		{pubAlex, privAlex, "mod", []string{"alex.com", "Mr Nobody"}},
+		{pubAlex, privAlex, "ask", []string{"alex.com"}},
 	}, "ok, data found", []byte("Mr Nobody")},
 
 	{"mod unathorized", []MessagePak{
-		{pubAlex, privAlex, "Reg", []string{"alex.com", "Alex"}},
-		{pubBrat, privBrat, "Mod", []string{"alex.com", "Alex"}},
+		{pubAlex, privAlex, "reg", []string{"alex.com", "Alex"}},
+		{pubBrat, privBrat, "mod", []string{"alex.com", "Alex"}},
 	}, "error: not authorized", []byte{}},
 
 	{"reg pass", []MessagePak{
-		{pubAlex, privAlex, "Reg", []string{"alex.com", "Alex"}},
-		{pubAlex, privAlex, "Pass", []string{"alex.com", pubAlex}},
+		{pubAlex, privAlex, "reg", []string{"alex.com", "Alex"}},
+		{pubAlex, privAlex, "pass", []string{"alex.com", pubAlex}},
 	}, "ok, can pass", []byte{}},
 
 	{"reg pass own", []MessagePak{
-		{pubAlex, privAlex, "Reg", []string{"alex.com", "Alex"}},
-		{pubAlex, privAlex, "Pass", []string{"alex.com", pubBrat}},
-		{pubAlex, privAlex, "Own", []string{"alex.com"}},
+		{pubAlex, privAlex, "reg", []string{"alex.com", "Alex"}},
+		{pubAlex, privAlex, "pass", []string{"alex.com", pubBrat}},
+		{pubAlex, privAlex, "own", []string{"alex.com"}},
 	}, "ok, data found", []byte(pubBrat)},
 
 	{"pass unathorized", []MessagePak{
-		{pubAlex, privAlex, "Reg", []string{"alex.com", "Alex"}},
-		{pubBrat, privBrat, "Pass", []string{"alex.com", pubBrat}},
+		{pubAlex, privAlex, "reg", []string{"alex.com", "Alex"}},
+		{pubBrat, privBrat, "pass", []string{"alex.com", pubBrat}},
 	}, "error: not authorized", []byte{}},
 
 	{"reg unathorized", []MessagePak{
-		{pubBrat, privBrat, "Reg", []string{"brat.com", "Brat"}},
+		{pubBrat, privBrat, "reg", []string{"brat.com", "Brat"}},
 	}, "error: not authorized", []byte{}},
 
 	{"free unathorized", []MessagePak{
-		{pubAlex, privAlex, "Reg", []string{"brat.com", "Alex"}},
-		{pubAlex, privAlex, "Pass", []string{"brat.com", pubBrat}},
-		{pubBrat, privBrat, "Free", []string{"brat.com"}},
+		{pubAlex, privAlex, "reg", []string{"brat.com", "Alex"}},
+		{pubAlex, privAlex, "pass", []string{"brat.com", pubBrat}},
+		{pubBrat, privBrat, "free", []string{"brat.com"}},
 	}, "error: not authorized", []byte{}},
 
 	{"pass authorized user", []MessagePak{
-		{pubAlex, privAlex, "Reg", []string{"alex.com", "Alex"}},
-		{pubAlex, privAlex, "Pass", []string{"alex.com", pubBrat}},
-		{pubBrat, privBrat, "Pass", []string{"alex.com", pubAlex}},
+		{pubAlex, privAlex, "reg", []string{"alex.com", "Alex"}},
+		{pubAlex, privAlex, "pass", []string{"alex.com", pubBrat}},
+		{pubBrat, privBrat, "pass", []string{"alex.com", pubAlex}},
 	}, "ok, can pass", []byte{}},
 
 	{"pass force authorized master", []MessagePak{
-		{pubAlex, privAlex, "Reg", []string{"alex.com", "Alex"}},
-		{pubAlex, privAlex, "Pass", []string{"alex.com", pubBrat}},
-		{pubAlex, privAlex, "Pass", []string{"alex.com", pubBrat}},
+		{pubAlex, privAlex, "reg", []string{"alex.com", "Alex"}},
+		{pubAlex, privAlex, "pass", []string{"alex.com", pubBrat}},
+		{pubAlex, privAlex, "pass", []string{"alex.com", pubBrat}},
 	}, "ok, can pass", []byte{}},
 
 	{"mod force authorized master", []MessagePak{
-		{pubAlex, privAlex, "Reg", []string{"alex.com", "Alex"}},
-		{pubAlex, privAlex, "Pass", []string{"alex.com", pubBrat}},
-		{pubAlex, privAlex, "Mod", []string{"alex.com", "Sophie"}},
+		{pubAlex, privAlex, "reg", []string{"alex.com", "Alex"}},
+		{pubAlex, privAlex, "pass", []string{"alex.com", pubBrat}},
+		{pubAlex, privAlex, "mod", []string{"alex.com", "Sophie"}},
 	}, "ok, can mod", []byte{}},
 
 	{"pass unathorized user", []MessagePak{
-		{pubAlex, privAlex, "Reg", []string{"alex.com", "Alex"}},
-		{pubAlex, privAlex, "Pass", []string{"alex.com", pubBrat}},
-		{pubBrat, privBrat, "Pass", []string{"alex.com", pubAlex}},
-		{pubBrat, privBrat, "Pass", []string{"alex.com", pubAlex}},
+		{pubAlex, privAlex, "reg", []string{"alex.com", "Alex"}},
+		{pubAlex, privAlex, "pass", []string{"alex.com", pubBrat}},
+		{pubBrat, privBrat, "pass", []string{"alex.com", pubAlex}},
+		{pubBrat, privBrat, "pass", []string{"alex.com", pubAlex}},
 	}, "error: not authorized", []byte{}},
 
 	{"mod unathorized user", []MessagePak{
-		{pubAlex, privAlex, "Reg", []string{"alex.com", "Alex"}},
-		{pubAlex, privAlex, "Pass", []string{"alex.com", pubBrat}},
-		{pubBrat, privBrat, "Pass", []string{"alex.com", pubAlex}},
-		{pubBrat, privBrat, "Mod", []string{"alex.com", "Larry"}},
+		{pubAlex, privAlex, "reg", []string{"alex.com", "Alex"}},
+		{pubAlex, privAlex, "pass", []string{"alex.com", pubBrat}},
+		{pubBrat, privBrat, "pass", []string{"alex.com", pubAlex}},
+		{pubBrat, privBrat, "mod", []string{"alex.com", "Larry"}},
 	}, "error: not authorized", []byte{}},
 }
 
@@ -361,14 +361,14 @@ func TestPersistency(t *testing.T) {
 
 	app = *NewPersistentApp(dir+"/database.db", masters)
 
-	pak = MessagePak{pubAlex, privAlex, "Reg", []string{"alex.com", "Alex"}}
+	pak = MessagePak{pubAlex, privAlex, "reg", []string{"alex.com", "Alex"}}
 	res = testMessagePak(pak, &app, t)
 	compareResult("persistency check 1", res, "", "ok, can reg", t)
 
 	app.Close()
 
 	app = *NewPersistentApp(dir+"/database.db", masters)
-	pak = MessagePak{pubAlex, privAlex, "Ask", []string{"alex.com"}}
+	pak = MessagePak{pubAlex, privAlex, "ask", []string{"alex.com"}}
 	res = testMessagePak(pak, &app, t)
 	compareResult("persistency check 2", res, "Alex", "ok, data found", t)
 

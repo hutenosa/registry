@@ -12,7 +12,7 @@ import (
 	"path"
 	"strings"
 
-	common "github.com/tendermint/go-common"
+	"github.com/tendermint/go-common"
 	"github.com/tendermint/go-crypto"
 	dbs "github.com/tendermint/go-db"
 	"github.com/tendermint/go-merkle"
@@ -99,7 +99,7 @@ func NewInMemoryApp(masters []string) *Application {
 }
 
 func NewPersistentApp(databaseFileName string, masters []string) *Application {
-	log.Print("use database from ", databaseFileName)
+	log.Print("use database at ", databaseFileName)
 	db, err := dbs.NewLevelDB(databaseFileName)
 	if err != nil {
 		log.Fatal("cannot init database: ", err)
@@ -125,23 +125,23 @@ func (app *Application) AppendTx(tx []byte) types.Result {
 	messageData, _ := hex.DecodeString(signedMessage.Data)
 	json.Unmarshal(messageData, &message)
 
-	switch message.Action {
-	case "Ask", "Own":
+	switch strings.ToLower(message.Action) {
+	case "ask", "own":
 		return types.OK
-	case "Reg":
+	case "reg":
 		data := message.Args[0]
 		meta := message.Args[1]
 		app.setMerklePayload(data, MerklePayload{signedMessage.Owner, meta})
-	case "Free":
+	case "free":
 		data := message.Args[0]
 		app.state.Remove([]byte(data))
-	case "Mod":
+	case "mod":
 		data := message.Args[0]
 		meta := message.Args[1]
 		merklePayload, _ := app.getMerklePayload(data)
 		merklePayload.Meta = meta
 		app.setMerklePayload(data, merklePayload)
-	case "Pass":
+	case "pass":
 		data := message.Args[0]
 		owner := message.Args[1]
 		merklePayload, _ := app.getMerklePayload(data)
@@ -211,8 +211,8 @@ func (app *Application) CheckTx(tx []byte) types.Result {
 		return types.NewError(1, "error: decoding message JSON")
 	}
 
-	switch m.Action {
-	case "Ask":
+	switch strings.ToLower(m.Action) {
+	case "ask":
 		if m.Args == nil || len(m.Args) != 1 {
 			return types.NewError(1, "error: ask should have 1 argument")
 		}
@@ -225,7 +225,7 @@ func (app *Application) CheckTx(tx []byte) types.Result {
 		} else {
 			return types.NewResultOK([]byte{}, "error: data not found")
 		}
-	case "Own":
+	case "own":
 		if m.Args == nil || len(m.Args) != 1 {
 			return types.NewError(1, "error: own should have 1 argument")
 		}
@@ -238,7 +238,7 @@ func (app *Application) CheckTx(tx []byte) types.Result {
 		} else {
 			return types.NewResultOK([]byte{}, "error: data not found")
 		}
-	case "Reg":
+	case "reg":
 		if m.Args == nil || len(m.Args) != 2 {
 			return types.NewError(1, "error: reg should have 2 arguments")
 		}
@@ -258,7 +258,7 @@ func (app *Application) CheckTx(tx []byte) types.Result {
 		} else {
 			return types.NewResultOK([]byte{}, "ok, can reg")
 		}
-	case "Free":
+	case "free":
 		if len(m.Args) != 1 {
 			return types.NewError(1, "error: free should have 1 argument")
 		}
@@ -274,7 +274,7 @@ func (app *Application) CheckTx(tx []byte) types.Result {
 		} else {
 			return types.NewResultOK([]byte{}, "ok, can free")
 		}
-	case "Mod":
+	case "mod":
 		if len(m.Args) != 2 {
 			return types.NewError(1, "error: mod should have 2 arguments")
 		}
@@ -295,7 +295,7 @@ func (app *Application) CheckTx(tx []byte) types.Result {
 		} else {
 			return types.NewResultOK([]byte{}, "error: data not found")
 		}
-	case "Pass":
+	case "pass":
 		if len(m.Args) != 2 {
 			return types.NewError(1, "error: pass should have 2 arguments")
 		}
